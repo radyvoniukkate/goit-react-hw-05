@@ -1,16 +1,34 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { api } from "/src/Api.js";
 import MovieList from "/src/components/MovieList/MovieList";
 import styles from "./MoviesPage.module.css";
 
-
 function MoviesPage() {
   const [query, setQuery] = useState("");
   const [movies, setMovies] = useState([]);
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  const searchMovies = async () => {
-    const response = await api.get(`/search/movie?query=${query}`);
-    setMovies(response.data.results);
+  useEffect(() => {
+    const initialQuery = searchParams.get("query");
+    if (initialQuery) {
+      setQuery(initialQuery);
+      fetchMovies(initialQuery);
+    }
+  }, [searchParams]);
+
+  const fetchMovies = async (searchQuery) => {
+    try {
+      const response = await api.get(`/search/movie?query=${searchQuery}`);
+      setMovies(response.data.results);
+    } catch (error) {
+      console.error("Error fetching movies:", error);
+    }
+  };
+
+  const handleSearch = () => {
+    setSearchParams({ query });
+    fetchMovies(query);
   };
 
   return (
@@ -22,7 +40,7 @@ function MoviesPage() {
         className={styles.input}
         onChange={(e) => setQuery(e.target.value)}
       />
-      <button onClick={searchMovies} className={styles.btn}>
+      <button onClick={handleSearch} className={styles.btn}>
         Search
       </button>
       <MovieList movies={movies} />

@@ -1,17 +1,26 @@
-import  { useEffect, useState, Suspense, lazy } from "react";
-import { useParams, Link, useLocation, Routes, Route, useNavigate } from "react-router-dom";
+import { useEffect, useState, Suspense, lazy, useRef } from "react";
+import {
+  useParams,
+  Link,
+  useLocation,
+  Routes,
+  Route,
+  useNavigate,
+} from "react-router-dom";
 import { fetchMovieDetails } from "/src/Api.js";
-import styles from "./MovieDetailsPage.module.css"
+import styles from "./MovieDetailsPage.module.css";
 
 const MovieCast = lazy(() => import("/src/components/MovieCast/MovieCast"));
-const MovieReviews = lazy(() => import("/src/components/MovieReviews/MovieReviews"));
+const MovieReviews = lazy(() =>
+  import("/src/components/MovieReviews/MovieReviews")
+);
 
 function MovieDetailsPage() {
   const { movieId } = useParams();
   const [movie, setMovie] = useState(null);
   const location = useLocation();
   const navigate = useNavigate();
-  const previousLocation = location.state?.from || "/movies";
+  const previousLocationRef = useRef(location.state?.from || "/movies");
 
   useEffect(() => {
     fetchMovieDetails(movieId).then((data) => setMovie(data));
@@ -22,7 +31,7 @@ function MovieDetailsPage() {
   return (
     <div className={styles.div}>
       <button
-        onClick={() => navigate(previousLocation)}
+        onClick={() => navigate(previousLocationRef.current)}
         className={styles.GBBtn}
       >
         Go back
@@ -52,7 +61,7 @@ function MovieDetailsPage() {
           <li>
             <Link
               to="cast"
-              state={{ from: previousLocation }}
+              state={{ from: previousLocationRef.current }}
               className={styles.link}
             >
               Cast
@@ -61,7 +70,7 @@ function MovieDetailsPage() {
           <li>
             <Link
               to="reviews"
-              state={{ from: previousLocation }}
+              state={{ from: previousLocationRef.current }}
               className={styles.link}
             >
               Reviews
