@@ -10,10 +10,10 @@ function MoviesPage() {
   const [searchParams, setSearchParams] = useSearchParams();
 
   useEffect(() => {
-    const initialQuery = searchParams.get("query");
-    if (initialQuery) {
-      setQuery(initialQuery);
-      fetchMovies(initialQuery);
+    const searchQuery = searchParams.get("query");
+    if (searchQuery) {
+      setQuery(searchQuery);
+      fetchMovies(searchQuery);
     }
   }, [searchParams]);
 
@@ -28,7 +28,6 @@ function MoviesPage() {
 
   const handleSearch = () => {
     setSearchParams({ query });
-    fetchMovies(query);
   };
 
   return (
